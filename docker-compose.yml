@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db_nalo:
+    image: kartoza/postgis:12.1
+    environment:
+      - POSTGRES_DB=nalo
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  server:
+    image: 'nalo_test'
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_DB=nalo
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - db_nalo
+  web:
+    build: ./app/frontend
+    command: npm start
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app/frontend:/app/frontend
